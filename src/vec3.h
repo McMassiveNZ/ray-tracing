@@ -32,7 +32,6 @@ struct v3
 
 	inline float length() const;
 	inline float length_sqr() const;
-	inline v3 unit() const;
 
 	float e[3];
 };
@@ -45,10 +44,8 @@ inline v3::v3(float e0, float e1, float e2)
 }
 
 inline v3::v3(float f)
+	: e{f, f, f}
 {
-	e[0] = f;
-	e[1] = f;
-	e[2] = f;
 }
 
 inline float v3::x() const
@@ -232,4 +229,20 @@ inline v3 operator/(v3 v, float f)
 v3 unit(v3 v)
 {
 	return v / v.length();
+}
+
+float dot(v3 a, v3 b)
+{
+	return {(a.e[0]*b.e[0]) + (a.e[1]*b.e[1]) + (a.e[2]*b.e[2])};
+}
+
+v3 cross(v3 a, v3 b)
+{
+	return 
+	{
+		a.e[1] * b.e[2] - a.e[2] * b.e[1],
+		-(a.e[0] * b.e[2] - a.e[2] * b.e[0]),
+		a.e[0] * b.e[1] - a.e[1] * b.e[0],
+
+	};
 }
