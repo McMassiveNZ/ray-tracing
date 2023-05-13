@@ -8,6 +8,7 @@ struct v3
 {
 	v3() = default;
 	inline v3(float e0, float e2, float e3);
+	inline v3(float f);
 
 	inline float x() const;
 	inline float y() const;
@@ -41,6 +42,13 @@ inline v3::v3(float e0, float e1, float e2)
 	e[0] = e0;
 	e[1] = e1;
 	e[2] = e2;
+}
+
+inline v3::v3(float f)
+{
+	e[0] = f;
+	e[1] = f;
+	e[2] = f;
 }
 
 inline float v3::x() const
@@ -192,6 +200,16 @@ inline v3 operator/(v3 a, v3 b)
 }
 
 inline v3 operator*(v3 v, float f)
+{
+	return
+	{
+		v[0] * f,
+		v[1] * f,
+		v[2] * f
+	};
+}
+
+inline v3 operator*(float f, v3 v)
 {
 	return
 	{

@@ -4,6 +4,7 @@ add_executable(
     ${current_target} 
     main.cpp
     vec3.h
+    ray.h
 )
 
 target_include_directories(${current_target} PUBLIC ../external)
