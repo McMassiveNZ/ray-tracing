@@ -1,12 +1,11 @@
-set(current_target blank_slate)
+set(current_target ray-tracing)
 
 add_executable(
     ${current_target} 
     main.cpp
 )
 
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${current_target} PRIVATE spdlog::spdlog spdlog::spdlog_header_only)
+target_include_directories(${current_target} PUBLIC ../external)
 
 if( ENABLE_ALL_REASONABLE_WARNINGS )
     MESSAGE("-- Additional Warnings Enabled")

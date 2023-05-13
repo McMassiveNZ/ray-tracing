@@ -1,4 +1,4 @@
-# blank-slate
-[![build](https://github.com/McMassiveNZ/blank-slate/actions/workflows/ci.yml/badge.svg)](https://github.com/McMassiveNZ/blank-slate/actions/workflows/ci.yml)
+# ray-tracing
+[![build](https://github.com/McMassiveNZ/ray-tracing/actions/workflows/ci.yml/badge.svg)](https://github.com/McMassiveNZ/ray-tracing/actions/workflows/ci.yml)
 
-A blank slate cpp project containing boilerplate for CMake, testing and basic CI
+Following along with the Ray Tracing in One Weekend Series by Peter Shirley https://raytracing.github.io/
