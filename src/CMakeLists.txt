@@ -3,6 +3,7 @@ set(current_target ray-tracing)
 add_executable(
     ${current_target} 
     main.cpp
+    vec3.h
 )
 
 target_include_directories(${current_target} PUBLIC ../external)

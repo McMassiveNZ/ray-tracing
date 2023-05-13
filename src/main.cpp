@@ -1,5 +1,7 @@
 #include <fstream>
 
+#include "vec3.h"
+
 auto main() -> int
 {
 	int nx = 800;
@@ -13,13 +15,11 @@ auto main() -> int
 	{
 		for (int i = 0; i < nx; ++i)
 		{
-			float r = static_cast<float>(i) / static_cast<float>(nx);
-			float g = static_cast<float>(j) / static_cast<float>(ny);
-			float b = 0.2f;
+			v3 col(static_cast<float>(i) / static_cast<float>(nx), static_cast<float>(j) / static_cast<float>(ny), 0.2f);
 
-			int ir = static_cast<int>(255.9f * r);
-			int ig = static_cast<int>(255.9f * g);
-			int ib = static_cast<int>(255.9f * b);
+			int ir = static_cast<int>(255.9f * col[0]);
+			int ig = static_cast<int>(255.9f * col[1]);
+			int ib = static_cast<int>(255.9f * col[2]);
 
 			out_stream << ir << " " << ig << " " << ib << "\n";
 		}
