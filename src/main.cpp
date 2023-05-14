@@ -4,6 +4,7 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
+#include "camera.h"
 
 auto ray_color(const ray& r, const hittable& world) -> color
 {
@@ -24,6 +25,7 @@ auto main() -> int
 	const auto aspect_ratio = 16.f / 9.f;
 	const int image_width = 400;
 	const int image_height = static_cast<int>(image_width / aspect_ratio);
+	const int samples_per_pixel = 100;
 
 	// World
 	hittable_list world;
@@ -33,14 +35,7 @@ auto main() -> int
 	world.objects.push_back(sphere_b);
 
 	// Camera
-	const auto viewport_height = 2.f;
-	const auto viewport_width = aspect_ratio * viewport_height;
-	const auto focal_length = 1.f;
-
-	const auto origin = point3{0.f};
-	const auto horizontal = v3{viewport_width, 0.f, 0.f};
-	const auto vertical = v3{0.f, viewport_height, 0.f};
-	const auto bottom_left = origin - horizontal/2 - vertical/2 - v3{0, 0, focal_length};
+	camera cam;
 
 	std::ofstream out_stream("z:\\git\\ray-tracing\\out.ppm");
 
@@ -51,13 +46,16 @@ auto main() -> int
 		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
 		for (int i = 0; i < image_width; ++i)
 		{
-			const float u = static_cast<float>(i) / static_cast<float>(image_width - 1);
-			const float v = static_cast<float>(j) / static_cast<float>(image_height - 1);
+			color pixel_color = {};
+			for (int s = 0; s < samples_per_pixel; ++s)
+			{
+				auto u = (static_cast<float>(i) + random_real<float>()) / static_cast<float>(image_width - 1);
+				auto v = (static_cast<float>(j) + random_real<float>()) / static_cast<float>(image_height - 1);
 
-			ray r(origin, bottom_left + u*horizontal + v*vertical);
-			v3 col = ray_color(r, world);
-
-			write_color(out_stream, col);
+				ray r = cam.get_ray(u, v);
+				pixel_color += ray_color(r, world);
+			}
+			write_color(out_stream, pixel_color, samples_per_pixel);
 		}
 	}
 }
