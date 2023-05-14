@@ -1,56 +1,63 @@
 #include <fstream>
+#include "common.h"
 #include "ray.h"
+#include "color.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-bool hit_sphere(v3 center, float radius, const ray& r)
+auto ray_color(const ray& r, const hittable& world) -> color
 {
-	v3 oc = r.origin - center;
-	const float a = dot(r.direction, r.direction);
-	const float b = 2.f * dot(oc, r.direction);
-	const float c = dot(oc, oc) - radius * radius;
-	const float discriminant = b * b - 4 * a * c;
-	return discriminant > 0;
-}
-
-auto color(const ray& r) -> v3
-{
-	if (hit_sphere(v3{0.f, 0.f, -1.f}, 0.5f, r))
+	hit_record result = {};
+	if (world.hit(r, 0, infinity, result))
 	{
-		return v3{1.f, 0.f, 0.f};
+		return 0.5f * (result.normal + color{1.f});
 	}
 
 	auto unit_direction = unit(r.direction);
-	const float t = 0.5f * (unit_direction.y() + 1.f);
-	return (1.f - t) * v3(1.f) + t * v3(0.5f, 0.7f, 1.f);
+	auto t = 0.5f * (unit_direction.y() + 1.f);
+	return (1.f - t) * color(1.f) + t * color(0.5f, 0.7f, 1.f);
 }
 
 auto main() -> int
 {
-	int nx = 200;
-	int ny = 100;
+	// Image
+	const auto aspect_ratio = 16.f / 9.f;
+	const int image_width = 400;
+	const int image_height = static_cast<int>(image_width / aspect_ratio);
+
+	// World
+	hittable_list world;
+	auto* sphere_a = new sphere(point3(0.f, 0.f, -1.f), 0.5f);
+	auto* sphere_b = new sphere(point3(0.f, -100.5f, -1.f), 100.f);
+	world.objects.push_back(sphere_a);
+	world.objects.push_back(sphere_b);
+
+	// Camera
+	const auto viewport_height = 2.f;
+	const auto viewport_width = aspect_ratio * viewport_height;
+	const auto focal_length = 1.f;
+
+	const auto origin = point3{0.f};
+	const auto horizontal = v3{viewport_width, 0.f, 0.f};
+	const auto vertical = v3{0.f, viewport_height, 0.f};
+	const auto bottom_left = origin - horizontal/2 - vertical/2 - v3{0, 0, focal_length};
 
 	std::ofstream out_stream("z:\\git\\ray-tracing\\out.ppm");
 
-	out_stream << "P3\n" << nx << " " << ny << "\n255\n";
-	v3 lower_left_corner(-2.f, -1.f, -1.f);
-	v3 horizontal(4.f, 0.f, 0.f);
-	v3 vertical(0.f, 2.f, 0.f);
-	v3 origin(0.f);
+	out_stream << "P3\n" << image_width << " " << image_height << "\n255\n";
 
-	for (int j = ny - 1; j >= 0; j--)
+	for (int j = image_height - 1; j >= 0; --j)
 	{
-		for (int i = 0; i < nx; ++i)
+		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+		for (int i = 0; i < image_width; ++i)
 		{
-			const float u = static_cast<float>(i) / static_cast<float>(nx);
-			const float v = static_cast<float>(j) / static_cast<float>(ny);
+			const float u = static_cast<float>(i) / static_cast<float>(image_width - 1);
+			const float v = static_cast<float>(j) / static_cast<float>(image_height - 1);
 
-			ray r(origin, lower_left_corner + u * horizontal + v * vertical);
-			v3 col = color(r);
+			ray r(origin, bottom_left + u*horizontal + v*vertical);
+			v3 col = ray_color(r, world);
 
-			int ir = static_cast<int>(255.9f * col[0]);
-			int ig = static_cast<int>(255.9f * col[1]);
-			int ib = static_cast<int>(255.9f * col[2]);
-
-			out_stream << ir << " " << ig << " " << ib << "\n";
+			write_color(out_stream, col);
 		}
 	}
 }

@@ -36,6 +36,9 @@ struct v3
 	float e[3];
 };
 
+using point3 = v3;
+using color = v3;
+
 inline v3::v3(float e0, float e1, float e2)
 {
 	e[0] = e0;
@@ -85,7 +88,7 @@ inline const v3& v3::operator+() const
 
 inline v3 v3::operator-() const
 {
-	return {e[0], e[1], e[2]};
+	return {-e[0], -e[1], -e[2]};
 }
 
 inline v3& v3::operator+=(v3 v)
@@ -148,12 +151,17 @@ inline float& v3::operator[](int i)
 
 inline float v3::length() const
 {
-	return sqrt((e[0] * e[0]) + (e[1] * e[1]) + (e[2] * e[2]));
+	return sqrt(length_sqr());
 }
 
 inline float v3::length_sqr() const
 {
 	return (e[0] * e[0]) + (e[1] * e[1]) + (e[2] * e[2]);
+}
+
+inline std::ostream& operator<<(std::ostream& out, v3 v)
+{
+	return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
 }
 
 inline v3 operator+(v3 a, v3 b)

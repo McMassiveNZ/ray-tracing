@@ -5,6 +5,11 @@ add_executable(
     main.cpp
     vec3.h
     ray.h
+    color.h
+    hittable.h
+    sphere.h
+    hittable_list.h
+    common.h
 )
 
 target_include_directories(${current_target} PUBLIC ../external)

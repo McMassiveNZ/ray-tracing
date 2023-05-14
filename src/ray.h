@@ -5,20 +5,20 @@
 struct ray
 {
     ray() = default;
-    ray(v3 o, v3 d);
+    ray(point3 o, v3 d);
     
-    v3 point_at_parameter(float t) const;
+    v3 at(float t) const;
 
-    v3 origin;
+    point3 origin;
     v3 direction;
 };
 
-ray::ray(v3 o, v3 d)
+ray::ray(point3 o, v3 d)
 : origin(o)
 , direction(d)
 {}
 
-v3 ray::point_at_parameter(float t) const
+v3 ray::at(float t) const
 {
     return origin + t*direction;
 }
