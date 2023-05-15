@@ -15,7 +15,7 @@ constexpr inline Real degrees_to_radians(Real degrees)
 }
 
 template<typename Real>
-constexpr inline Real random_real() 
+inline Real random_real() 
 {
 	static std::uniform_real_distribution<Real> distribution(0.f, 1.f);
 	static std::mt19937 generator;
