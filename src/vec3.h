@@ -33,6 +33,8 @@ struct v3
 	inline float length() const;
 	inline float length_sqr() const;
 
+	inline bool near_zero() const;
+
 	float e[3];
 };
 
@@ -157,6 +159,16 @@ inline float v3::length() const
 inline float v3::length_sqr() const
 {
 	return (e[0] * e[0]) + (e[1] * e[1]) + (e[2] * e[2]);
+}
+
+inline bool v3::near_zero() const
+{
+	const float abs = 1e-8f;
+	return {
+		(fabsf(e[0]) < abs) &&
+		(fabsf(e[1]) < abs) &&
+		(fabsf(e[2]) < abs)
+	};
 }
 
 inline std::ostream& operator<<(std::ostream& out, v3 v)
@@ -289,4 +301,9 @@ v3 random_in_hemisphere(v3 normal)
 		return in_unit_sphere;
 	else
 		return -in_unit_sphere;
+}
+
+v3 reflect( v3 v, v3 n)
+{
+	return v - 2.f*dot(v, n) * n;
 }

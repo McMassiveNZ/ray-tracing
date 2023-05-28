@@ -1,10 +1,15 @@
 #include <fstream>
+#include <memory>
+
 #include "common.h"
 #include "ray.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
+#include "material.h"
+#include "lambertian.h"
+#include "metal.h"
 
 auto ray_color(const ray& r, const hittable& world, int depth) -> color
 {
@@ -14,8 +19,11 @@ auto ray_color(const ray& r, const hittable& world, int depth) -> color
 	hit_record result = {};
 	if (world.hit(r, 0.001f, infinity, result))
 	{
-		point3 target = result.p + random_in_hemisphere(result.normal);
-		return 0.5 * ray_color(ray(result.p, target - result.p), world, depth - 1);
+		ray scattered;
+		color attenuation;
+		if (result.mat->scatter(r, result, attenuation, scattered))
+			return attenuation * ray_color(scattered, world, depth - 1);
+		return color(0, 0, 0);
 	}
 
 	auto unit_direction = unit(r.direction);
@@ -32,12 +40,23 @@ auto main() -> int
 	const int samples_per_pixel = 100;
 	const int max_depth = 50;
 
+
 	// World
 	hittable_list world;
-	auto* sphere_a = new sphere(point3(0.f, 0.f, -1.f), 0.5f);
-	auto* sphere_b = new sphere(point3(0.f, -100.5f, -1.f), 100.f);
-	world.objects.push_back(sphere_a);
-	world.objects.push_back(sphere_b);
+	auto material_ground = std::make_unique<lambertian>(color(0.8f, 0.8f, 0.0f));
+	auto material_center = std::make_unique<lambertian>(color(0.7f, 0.3f, 0.3f));
+	auto material_left = std::make_unique<metal>(color(0.8f, 0.8f, 0.8f), 0.3f);
+	auto material_right = std::make_shared<metal>(color(0.8f, 0.6f, 0.2f), 0.1f);
+
+	auto sphere_a = std::make_unique<sphere>(point3(0.0f, -100.5f, -1.0f), 100.0f, material_ground.get());
+	auto sphere_b = std::make_unique<sphere>(point3(0.0f, 0.0f, -1.0f), 0.5f, material_center.get());
+	auto sphere_c = std::make_unique<sphere>(point3(-1.0f, 0.0f, -1.0f), 0.5f, material_left.get());
+	auto sphere_d = std::make_unique<sphere>(point3(1.0f, 0.0f, -1.0f), 0.5f, material_right.get());
+
+	world.objects.push_back(sphere_a.get());
+	world.objects.push_back(sphere_b.get());
+	world.objects.push_back(sphere_c.get());
+	world.objects.push_back(sphere_d.get());
 
 	// Camera
 	camera cam;

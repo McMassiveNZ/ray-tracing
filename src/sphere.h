@@ -2,22 +2,25 @@
 
 #include "hittable.h"
 #include "vec3.h"
+#include "material.h"
 
 class sphere final : public hittable
 {
 public:
 	sphere() = default;
-	sphere(point3 c, float r);
+	sphere(point3 c, float r, material* mat);
 
 	bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override;
 
 	point3 center;
 	float radius;
+	material* mat;
 };
 
-sphere::sphere(point3 c, float r) 
+sphere::sphere(point3 c, float r, material* mat) 
 : center(c)
 , radius(r)
+, mat(mat)
 {
 }
 
@@ -47,6 +50,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
 	rec.t = root;
 	rec.p = p;
 	rec.normal = (rec.p - center) / radius;
+	rec.mat = mat;
 	
 	const auto outward_normal = (p - center) / radius;
 	rec.set_face_normal(r, outward_normal);

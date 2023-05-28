@@ -1,11 +1,13 @@
 #pragma once
 
 #include "ray.h"
+#include "material.h"
 
 struct hit_record
 {
 	point3 p;
 	v3 normal;
+	material* mat;
 	float t;
 	bool front_face;
 
