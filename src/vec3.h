@@ -254,3 +254,39 @@ v3 cross(v3 a, v3 b)
 
 	};
 }
+
+v3 random()
+{
+	return { random_real<float>(), random_real<float>(), random_real<float>() };
+}
+
+v3 random(float min, float max)
+{
+	return {random_real<float>(min, max), random_real<float>(min, max), random_real<float>(min, max)};
+}
+
+v3 random_in_unit_sphere()
+{
+	while (true)
+	{
+		auto p = random(-1.f, 1.f);
+		if (p.length_sqr() > 1.f)
+			continue;
+
+		return p;
+	}
+}
+
+v3 random_unit_vector()
+{
+	return unit(random_in_unit_sphere());
+}
+
+v3 random_in_hemisphere(v3 normal)
+{
+	v3 in_unit_sphere = random_in_unit_sphere();
+	if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+		return in_unit_sphere;
+	else
+		return -in_unit_sphere;
+}

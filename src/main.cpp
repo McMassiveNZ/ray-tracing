@@ -6,12 +6,16 @@
 #include "sphere.h"
 #include "camera.h"
 
-auto ray_color(const ray& r, const hittable& world) -> color
+auto ray_color(const ray& r, const hittable& world, int depth) -> color
 {
+	if (depth <= 0)
+		return color{0.f, 0.f, 0.f};
+
 	hit_record result = {};
-	if (world.hit(r, 0, infinity, result))
+	if (world.hit(r, 0.001f, infinity, result))
 	{
-		return 0.5f * (result.normal + color{1.f});
+		point3 target = result.p + random_in_hemisphere(result.normal);
+		return 0.5 * ray_color(ray(result.p, target - result.p), world, depth - 1);
 	}
 
 	auto unit_direction = unit(r.direction);
@@ -23,9 +27,10 @@ auto main() -> int
 {
 	// Image
 	const auto aspect_ratio = 16.f / 9.f;
-	const int image_width = 400;
+	const int image_width = 800;
 	const int image_height = static_cast<int>(image_width / aspect_ratio);
 	const int samples_per_pixel = 100;
+	const int max_depth = 50;
 
 	// World
 	hittable_list world;
@@ -53,7 +58,7 @@ auto main() -> int
 				auto v = (static_cast<float>(j) + random_real<float>()) / static_cast<float>(image_height - 1);
 
 				ray r = cam.get_ray(u, v);
-				pixel_color += ray_color(r, world);
+				pixel_color += ray_color(r, world, max_depth);
 			}
 			write_color(out_stream, pixel_color, samples_per_pixel);
 		}

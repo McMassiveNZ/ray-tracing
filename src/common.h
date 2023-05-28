@@ -22,6 +22,12 @@ constexpr inline Real random_real()
 	return distribution(generator);
 }
 
+template< typename Real>
+inline Real random_real(Real min, Real max)
+{
+	return min + (max - min) * random_real<Real>();
+}
+
 template< typename Real >
 constexpr inline Real clamp(Real x, Real min, Real max)
 {
