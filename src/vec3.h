@@ -241,7 +241,7 @@ v3 unit(v3 v)
 
 float dot(v3 a, v3 b)
 {
-	return {(a.e[0]*b.e[0]) + (a.e[1]*b.e[1]) + (a.e[2]*b.e[2])};
+	return (a.e[0]*b.e[0]) + (a.e[1]*b.e[1]) + (a.e[2]*b.e[2]);
 }
 
 v3 cross(v3 a, v3 b)
