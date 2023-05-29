@@ -164,11 +164,9 @@ inline float v3::length_sqr() const
 inline bool v3::near_zero() const
 {
 	const float abs = 1e-8f;
-	return {
-		(fabsf(e[0]) < abs) &&
-		(fabsf(e[1]) < abs) &&
-		(fabsf(e[2]) < abs)
-	};
+	return (fabsf(e[0]) < abs) &&
+		   (fabsf(e[1]) < abs) &&
+		   (fabsf(e[2]) < abs);
 }
 
 inline std::ostream& operator<<(std::ostream& out, v3 v)
