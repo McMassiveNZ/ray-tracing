@@ -267,12 +267,12 @@ v3 cross(v3 a, v3 b)
 	};
 }
 
-v3 random()
+v3 random_vector()
 {
 	return { random_real<float>(), random_real<float>(), random_real<float>() };
 }
 
-v3 random(float min, float max)
+v3 random_vector(float min, float max)
 {
 	return {random_real<float>(min, max), random_real<float>(min, max), random_real<float>(min, max)};
 }
@@ -281,7 +281,7 @@ v3 random_in_unit_sphere()
 {
 	while (true)
 	{
-		auto p = random(-1.f, 1.f);
+		auto p = random_vector(-1.f, 1.f);
 		if (p.length_sqr() > 1.f)
 			continue;
 
