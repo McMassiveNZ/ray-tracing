@@ -18,13 +18,3 @@ struct ray
     point3 origin;
     v3 direction;
 };
-
-ray::ray(point3 o, v3 d)
-: origin(o)
-, direction(d)
-{}
-
-v3 ray::at(float t) const
-{
-    return origin + t*direction;
-}

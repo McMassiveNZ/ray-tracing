@@ -1,28 +1,18 @@
 #pragma once
 
-#include "material.h"
-#include "ray.h"
+#include "vec3.h"
 
-struct metal : public material
+struct ray;
+struct hit_record;
+
+struct metal
 {
 public:
+	metal() = default;
 	metal(color a, float fuzz);
-
-	virtual bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const override;
 
 	color albedo;
 	float fuzz;
 };
 
-metal::metal(color a, float f)
-	: albedo(a)
-	, fuzz(f)
-{}
-
- bool metal::scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const
-{
-	v3 reflected = reflect(unit(r_in.direction), rec.normal);
-	scattered = ray(rec.p, reflected + fuzz*random_in_unit_sphere());
-	attenuation = albedo;
-	return (dot(scattered.direction, rec.normal) > 0);
-}
+ bool scatter(const metal& mat, const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered);

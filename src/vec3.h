@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include "common.h"
 
 struct v3
 {
@@ -244,17 +245,17 @@ inline v3 operator/(v3 v, float f)
 	};
 }
 
-v3 unit(v3 v)
+inline v3 unit(v3 v)
 {
 	return v / v.length();
 }
 
-float dot(v3 a, v3 b)
+inline float dot(v3 a, v3 b)
 {
 	return (a.e[0]*b.e[0]) + (a.e[1]*b.e[1]) + (a.e[2]*b.e[2]);
 }
 
-v3 cross(v3 a, v3 b)
+inline v3 cross(v3 a, v3 b)
 {
 	return 
 	{
@@ -265,17 +266,17 @@ v3 cross(v3 a, v3 b)
 	};
 }
 
-v3 random_vector()
+inline v3 random_vector()
 {
 	return { random_real<float>(), random_real<float>(), random_real<float>() };
 }
 
-v3 random_vector(float min, float max)
+inline v3 random_vector(float min, float max)
 {
 	return {random_real<float>(min, max), random_real<float>(min, max), random_real<float>(min, max)};
 }
 
-v3 random_in_unit_sphere()
+inline v3 random_in_unit_sphere()
 {
 	while (true)
 	{
@@ -287,12 +288,12 @@ v3 random_in_unit_sphere()
 	}
 }
 
-v3 random_unit_vector()
+inline v3 random_unit_vector()
 {
 	return unit(random_in_unit_sphere());
 }
 
-v3 random_in_hemisphere(v3 normal)
+inline v3 random_in_hemisphere(v3 normal)
 {
 	v3 in_unit_sphere = random_in_unit_sphere();
 	if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
@@ -301,7 +302,15 @@ v3 random_in_hemisphere(v3 normal)
 		return -in_unit_sphere;
 }
 
-v3 reflect( v3 v, v3 n)
+inline v3 reflect( v3 v, v3 n)
 {
 	return v - 2.f*dot(v, n) * n;
+}
+
+inline v3 refract(const v3& uv, const v3& n, float etai_over_etat)
+{
+	auto cos_theta = fminf(dot(-uv, n), 1.0f);
+	v3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+	v3 r_out_parallel = -sqrtf(fabsf(1.0f - r_out_perp.length_sqr())) * n;
+	return r_out_perp + r_out_parallel;
 }

@@ -10,6 +10,7 @@
 #include "material.h"
 #include "lambertian.h"
 #include "metal.h"
+#include "dielectric.h"
 
 auto ray_color(const ray& r, const hittable& world, int depth) -> color
 {
@@ -17,11 +18,11 @@ auto ray_color(const ray& r, const hittable& world, int depth) -> color
 		return color{0.f, 0.f, 0.f};
 
 	hit_record result = {};
-	if (world.hit(r, 0.001f, infinity, result))
+	if (hit(world, r, 0.001f, infinity, result))
 	{
 		ray scattered;
 		color attenuation;
-		if (result.mat->scatter(r, result, attenuation, scattered))
+		if (result.mat && scatter(*result.mat, r, result, attenuation, scattered))
 			return attenuation * ray_color(scattered, world, depth - 1);
 		return color(0, 0, 0);
 	}
@@ -43,20 +44,11 @@ auto main() -> int
 
 	// World
 	hittable_list world;
-	auto material_ground = std::make_unique<lambertian>(color(0.8f, 0.8f, 0.0f));
-	auto material_center = std::make_unique<lambertian>(color(0.7f, 0.3f, 0.3f));
-	auto material_left = std::make_unique<metal>(color(0.8f, 0.8f, 0.8f), 0.3f);
-	auto material_right = std::make_shared<metal>(color(0.8f, 0.6f, 0.2f), 0.1f);
-
-	auto sphere_a = std::make_unique<sphere>(point3(0.0f, -100.5f, -1.0f), 100.0f, material_ground.get());
-	auto sphere_b = std::make_unique<sphere>(point3(0.0f, 0.0f, -1.0f), 0.5f, material_center.get());
-	auto sphere_c = std::make_unique<sphere>(point3(-1.0f, 0.0f, -1.0f), 0.5f, material_left.get());
-	auto sphere_d = std::make_unique<sphere>(point3(1.0f, 0.0f, -1.0f), 0.5f, material_right.get());
-
-	world.objects.push_back(sphere_a.get());
-	world.objects.push_back(sphere_b.get());
-	world.objects.push_back(sphere_c.get());
-	world.objects.push_back(sphere_d.get());
+	world.objects.emplace_back(sphere(point3(0.0f, -100.5f, -1.0f), 100.0f, lambertian({0.8f, 0.8f, 0.f})));
+	world.objects.emplace_back(sphere(point3(0.0f, 0.0f, -1.0f), 0.5f, lambertian({0.1f, 0.2f, 0.5f})));
+	world.objects.emplace_back(sphere(point3(-1.0f, 0.0f, -1.0f), 0.5f, dielectric(1.5f)));
+	world.objects.emplace_back(sphere(point3(-1.0f, 0.0f, -1.0f), -0.4f, dielectric(1.5f)));
+	world.objects.emplace_back(sphere(point3(1.0f, 0.0f, -1.0f), 0.5f, metal({0.8f, 0.6f, 0.2f}, 0.1f)));
 
 	// Camera
 	camera cam;

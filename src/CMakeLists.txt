@@ -5,12 +5,22 @@ add_executable(
     main.cpp
     vec3.h
     ray.h
+    ray.cpp
     color.h
     hittable.h
     sphere.h
+    sphere.cpp
     hittable_list.h
+    hittable_list.cpp
     common.h
     camera.h
+    material.h
+    metal.h
+    metal.cpp
+    lambertian.h
+    lambertian.cpp
+    dielectric.h
+    dielectric.cpp
 )
 
 target_include_directories(${current_target} PUBLIC ../external)
