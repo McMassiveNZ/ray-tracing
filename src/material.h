@@ -8,61 +8,39 @@ struct ray;
 
 struct material
 {
-	class MaterialConcept
+	template <typename T>
+	material(T t)
+		: self{std::make_shared<Model<T>>(std::move(t))}
 	{
-	public:
-		virtual ~MaterialConcept() = default;
+	}
+
+	friend bool scatter(const material& h, const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
+	{
+		return h.self->scatter(r_in, rec, attenuation, scattered);
+	}
+
+private:
+	struct Concept
+	{
+		virtual ~Concept() = default;
 		virtual bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const = 0;
-		virtual std::unique_ptr<MaterialConcept> clone() const = 0;
 	};
 
 	template <typename T>
-	class MaterialModel : public MaterialConcept
+	struct Model : public Concept
 	{
-		T object;
-
-	public:
-		MaterialModel(T&& value)
-			: object{std::forward<T>(value)}
+		Model(T&& value)
+			: m_data{std::move(value)}
 		{
 		}
 
 		bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const override
 		{
-			return ::scatter(object, r_in, rec, attenuation, scattered);
+			return ::scatter(m_data, r_in, rec, attenuation, scattered);
 		}
 
-		std::unique_ptr<MaterialConcept> clone() const override final
-		{
-			return std::make_unique<MaterialModel>(*this);
-		}
+		T m_data;
 	};
 
-	friend bool scatter(const material& h, const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
-	{
-		return h.pimpl->scatter(r_in, rec, attenuation, scattered);
-	}
-
-	std::unique_ptr<MaterialConcept> pimpl;
-
-public:
-	template <typename T>
-	material(T&& t)
-		: pimpl{std::make_unique<MaterialModel<T>>(std::forward<T>(t))}
-	{
-	}
-
-	material(const material& s)
-		: pimpl{s.pimpl->clone()}
-	{
-	}
-
-	material& operator=(material&& s) noexcept
-	{
-		pimpl = s.pimpl->clone();
-		return *this;
-	}
-
-	material(material&& s) = default;
-	material& operator=(const material& s) = delete;
+	std::shared_ptr<const Concept> self;
 };

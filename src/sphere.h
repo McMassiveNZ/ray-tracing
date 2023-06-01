@@ -8,7 +8,6 @@ struct ray;
 class sphere
 {
 public:
-	sphere() = default;
 	sphere(point3 c, float r, material mat);
 
 	point3 center;

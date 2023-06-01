@@ -25,61 +25,40 @@ void hit_record::set_face_normal(const ray& r, v3 outward_normal)
 
 class hittable
 {
-	class HittableConcept
+public:
+	template <typename T>
+	hittable(T t)
+		: self{std::make_shared<Model<T>>(std::move(t))}
 	{
-	public:
-		virtual ~HittableConcept() = default;
+	}
+
+	friend bool hit(const hittable& h, const ray& r, float t_min, float t_max, hit_record& rec)
+	{
+		return h.self->hit(r, t_min, t_max, rec);
+	}
+
+private:
+	struct Concept
+	{
+		virtual ~Concept() = default;
 		virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
-		virtual std::unique_ptr<HittableConcept> clone() const = 0;
 	};
 
 	template <typename T>
-	class HittableModel : public HittableConcept
+	struct Model final : public Concept
 	{
-		T object;
-
-	public:
-		HittableModel(T&& value)
-			: object{std::forward<T>(value)}
+		Model(T value)
+			: m_data{std::move(value)}
 		{
 		}
 
 		bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override final
 		{
-			return ::hit(object, r, t_min, t_max, rec);
+			return ::hit(m_data, r, t_min, t_max, rec);
 		}
 
-		std::unique_ptr<HittableConcept> clone() const override final
-		{
-			return std::make_unique<HittableModel>(*this);
-		}
+		T m_data;
 	};
 
-	friend bool hit(const hittable& h, const ray& r, float t_min, float t_max, hit_record& rec)
-	{
-		return h.pimpl->hit(r, t_min, t_max, rec);
-	}
-
-	std::unique_ptr<HittableConcept> pimpl;
-
-public:
-	template <typename T>
-	hittable(T&& t)
-		: pimpl{std::make_unique<HittableModel<T>>(std::forward<T>(t))}
-	{
-	}
-
-	hittable(const hittable& s)
-		: pimpl{s.pimpl->clone()}
-	{
-	}
-
-	hittable& operator=(hittable&& s) noexcept
-	{
-		pimpl = s.pimpl->clone();
-		return *this;
-	}
-
-	hittable(hittable&& s) = default;
-	hittable& operator=(const hittable& s) = delete;
+	std::shared_ptr<const Concept> self;
 };

@@ -8,7 +8,6 @@ struct hit_record;
 struct metal
 {
 public:
-	metal() = default;
 	metal(color a, float fuzz);
 
 	color albedo;

@@ -7,7 +7,6 @@ struct hit_record;
 
 struct dielectric
 {
-	dielectric() = default;
 	dielectric(float index_of_refraction);
 
 	float ir;
