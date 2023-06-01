@@ -34,14 +34,14 @@ public:
 
 	friend bool hit(const hittable& h, const ray& r, float t_min, float t_max, hit_record& rec)
 	{
-		return h.self->hit(r, t_min, t_max, rec);
+		return h.self->hit_(r, t_min, t_max, rec);
 	}
 
 private:
 	struct Concept
 	{
 		virtual ~Concept() = default;
-		virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
+		virtual bool hit_(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
 	};
 
 	template <typename T>
@@ -52,9 +52,9 @@ private:
 		{
 		}
 
-		bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override final
+		bool hit_(const ray& r, float t_min, float t_max, hit_record& rec) const override final
 		{
-			return ::hit(m_data, r, t_min, t_max, rec);
+			return hit(m_data, r, t_min, t_max, rec);
 		}
 
 		T m_data;
