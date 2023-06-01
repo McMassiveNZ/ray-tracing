@@ -18,46 +18,38 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         build_configuration: [Debug, Release]
         compiler: [llvm, gcc]
-        vcpkg_bootstrap: [bootstrap-vcpkg.sh]
 
         exclude:
           - os: windows-latest
-            vcpkg_bootstrap: bootstrap-vcpkg.sh
 
         include:
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: llvm
             build_configuration: Debug
 
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: llvm
             build_configuration: Release
 
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: gcc
             build_configuration: Debug
 
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: gcc
             build_configuration: Release
 
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: msvc
             build_configuration: Debug
 
           - os: 'windows-latest'
             triplet: x64-windows
-            vcpkg_bootstrap: bootstrap-vcpkg.bat
             compiler: msvc
             build_configuration: Release
 
