@@ -44,14 +44,19 @@ auto main() -> int
 
 	// World
 	hittable_list world;
-	world.objects.emplace_back(sphere(point3(0.0f, -100.5f, -1.0f), 100.0f, lambertian({0.8f, 0.8f, 0.f})));
-	world.objects.emplace_back(sphere(point3(0.0f, 0.0f, -1.0f), 0.5f, lambertian({0.1f, 0.2f, 0.5f})));
-	world.objects.emplace_back(sphere(point3(-1.0f, 0.0f, -1.0f), 0.5f, dielectric(1.5f)));
-	world.objects.emplace_back(sphere(point3(-1.0f, 0.0f, -1.0f), -0.4f, dielectric(1.5f)));
-	world.objects.emplace_back(sphere(point3(1.0f, 0.0f, -1.0f), 0.5f, metal({0.8f, 0.6f, 0.2f}, 0.1f)));
 
-	// Camera
-	camera cam;
+	auto material_ground = lambertian(color(0.8f, 0.8f, 0.f));
+	auto material_center = lambertian(color(0.1f, 0.2f, 0.5f));
+	auto material_left = dielectric(1.5f);
+	auto material_right = metal(color(0.8f, 0.6f, 0.2f), 0.f);
+
+	world.objects.emplace_back(sphere(point3(0.f, -100.5f, -1.0), 100.f, material_ground));
+	world.objects.emplace_back(sphere(point3(0.f, 0.f, -1.0), 0.5f, material_center));
+	world.objects.emplace_back(sphere(point3(-1.f, 0.f, -1.0), 0.5f, material_left));
+	world.objects.emplace_back(sphere(point3(-1.f, 0.f, -1.0), -0.45f, material_left));
+	world.objects.emplace_back(sphere(point3(1.0, 0.f, -1.f), 0.5f, material_right));
+
+	camera cam(point3(-2.f, 2.f, 1.f), point3(0.f, 0.f, -1.f), v3(0.f, 1.f, 0.f), 20, aspect_ratio);
 
 	std::ofstream out_stream("z:\\git\\ray-tracing\\out.ppm");
 
