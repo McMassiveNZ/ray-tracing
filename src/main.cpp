@@ -56,7 +56,14 @@ auto main() -> int
 	world.objects.emplace_back(sphere(point3(-1.f, 0.f, -1.0), -0.45f, material_left));
 	world.objects.emplace_back(sphere(point3(1.0, 0.f, -1.f), 0.5f, material_right));
 
-	camera cam(point3(-2.f, 2.f, 1.f), point3(0.f, 0.f, -1.f), v3(0.f, 1.f, 0.f), 20, aspect_ratio);
+	const point3 lookfrom(3.f, 3.f, 2.f);
+	const point3 lookat(0.f, 0.f, -1.f);
+	const v3 vup(0.f, 1.f, 0.f);
+	const auto dist_to_focus = (lookfrom - lookat).length();
+	const auto aperture = 2.f;
+
+	camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+	//camera cam(point3(-2.f, 2.f, 1.f), point3(0.f, 0.f, -1.f), v3(0.f, 1.f, 0.f), 20, aspect_ratio);
 
 	std::ofstream out_stream("z:\\git\\ray-tracing\\out.ppm");
 

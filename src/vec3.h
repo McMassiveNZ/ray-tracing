@@ -293,6 +293,17 @@ inline v3 random_unit_vector()
 	return unit(random_in_unit_sphere());
 }
 
+inline v3 random_in_unit_disk()
+{
+	while (true)
+	{
+		auto p = v3(random_real<float>(-1, 1), random_real<float>(-1, 1), 0);
+		if (p.length_sqr() >= 1)
+			continue;
+		return p;
+	}
+}
+
 inline v3 random_in_hemisphere(v3 normal)
 {
 	v3 in_unit_sphere = random_in_unit_sphere();

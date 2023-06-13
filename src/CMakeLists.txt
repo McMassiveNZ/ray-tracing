@@ -14,6 +14,7 @@ add_executable(
     hittable_list.cpp
     common.h
     camera.h
+    camera.cpp
     material.h
     metal.h
     metal.cpp
