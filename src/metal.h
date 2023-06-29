@@ -7,7 +7,6 @@ struct hit_record;
 
 struct metal
 {
-public:
 	metal(color a, float fuzz);
 
 	color albedo;

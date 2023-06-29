@@ -32,38 +32,69 @@ auto ray_color(const ray& r, const hittable& world, int depth) -> color
 	return (1.f - t) * color(1.f) + t * color(0.5f, 0.7f, 1.f);
 }
 
+auto random_scene() -> hittable_list
+{
+	hittable_list world;
+
+	world.objects.emplace_back(sphere(point3(0.f, -1000.f, 0.f), 1000.f, lambertian({.5f, .5f, .5f})));
+
+	for (int a = -11; a < 11; a++)
+	{
+		for (int b = -11; b < 11; b++)
+		{
+			auto choose_mat = random_real<float>();
+			point3 center(a + 0.9f * random_real<float>(), 0.2f, b + 0.9f * random_real<float>());
+
+			if ((center - point3(4.f, 0.2f, 0.f)).length() > 0.9f)
+			{
+				if (choose_mat < 0.8)
+				{
+					// diffuse
+					color albedo = random_vector() * random_vector();
+					world.objects.emplace_back(sphere(center, 0.2f, lambertian(albedo)));
+				}
+				else if (choose_mat < 0.95)
+				{
+					// metal
+					color albedo = random_vector(0.5f, 1.f);
+					float fuzz = random_real<float>(0.f, 0.5f);
+					world.objects.emplace_back(sphere(center, 0.2f, metal(albedo, fuzz)));
+				}
+				else
+				{
+					// glass
+					world.objects.emplace_back(sphere(center, 0.2f, dielectric(1.5f)));
+				}
+			}
+		}
+	}
+
+	world.objects.emplace_back(sphere(point3(0.f, 1.f, 0.f), 1.0f, dielectric(1.5f)));
+	world.objects.emplace_back(sphere(point3(-4.f, 1.f, 0.f), 1.0f, lambertian(color(0.4f, 0.2f, 0.1f))));
+	world.objects.emplace_back(sphere(point3(4.f, 1.f, 0.f), 1.0f, metal(color(0.7f, 0.6f, 0.5f), 0.f)));
+
+	return world;
+}
+
 auto main() -> int
 {
 	// Image
 	const auto aspect_ratio = 16.f / 9.f;
-	const int image_width = 800;
+	const int image_width = 1200;
 	const int image_height = static_cast<int>(image_width / aspect_ratio);
-	const int samples_per_pixel = 100;
+	const int samples_per_pixel = 500;
 	const int max_depth = 50;
 
-
 	// World
-	hittable_list world;
+	hittable_list world = random_scene();
 
-	auto material_ground = lambertian(color(0.8f, 0.8f, 0.f));
-	auto material_center = lambertian(color(0.1f, 0.2f, 0.5f));
-	auto material_left = dielectric(1.5f);
-	auto material_right = metal(color(0.8f, 0.6f, 0.2f), 0.f);
-
-	world.objects.emplace_back(sphere(point3(0.f, -100.5f, -1.0), 100.f, material_ground));
-	world.objects.emplace_back(sphere(point3(0.f, 0.f, -1.0), 0.5f, material_center));
-	world.objects.emplace_back(sphere(point3(-1.f, 0.f, -1.0), 0.5f, material_left));
-	world.objects.emplace_back(sphere(point3(-1.f, 0.f, -1.0), -0.45f, material_left));
-	world.objects.emplace_back(sphere(point3(1.0, 0.f, -1.f), 0.5f, material_right));
-
-	const point3 lookfrom(3.f, 3.f, 2.f);
-	const point3 lookat(0.f, 0.f, -1.f);
+	const point3 lookfrom(13.f, 2.f, 3.f);
+	const point3 lookat(0.f, 0.f, 0.f);
 	const v3 vup(0.f, 1.f, 0.f);
-	const auto dist_to_focus = (lookfrom - lookat).length();
-	const auto aperture = 2.f;
+	const float dist_to_focus = 10.f;
+	const float aperture = 0.1f;
 
 	camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
-	//camera cam(point3(-2.f, 2.f, 1.f), point3(0.f, 0.f, -1.f), v3(0.f, 1.f, 0.f), 20, aspect_ratio);
 
 	std::ofstream out_stream("z:\\git\\ray-tracing\\out.ppm");
 
